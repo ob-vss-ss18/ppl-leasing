@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -11,8 +12,8 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/query", sayhelloName)  // set router
-	err := http.ListenAndServe(":9090", nil) // set listen port
+	http.HandleFunc("/", sayhelloName)                     // set router
+	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
