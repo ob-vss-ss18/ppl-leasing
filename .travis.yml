@@ -1,3 +1,7 @@
- language: go
-  go:
-    - "1.10"
+language: go
+go:
+  - "1.10"
+deploy:
+  provider: heroku
+  api_key: b5e5b9fa-6f7a-4d11-8e79-9171ab1cd6ed
+  app: ppl-leasing
