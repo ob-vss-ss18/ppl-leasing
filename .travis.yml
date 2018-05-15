@@ -12,4 +12,4 @@ deploy:
   api_key: $HEROKU_APIKEY
   app:
     master: ppl-leasing-dev
-    production: ppl-leasing
+    release: ppl-leasing
