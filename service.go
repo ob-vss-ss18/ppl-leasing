@@ -8,7 +8,7 @@ import (
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello world") // send data to client side
+	fmt.Fprintf(w, "Hello world, Dev Heroku!") // send data to client side
 }
 
 func main() {
