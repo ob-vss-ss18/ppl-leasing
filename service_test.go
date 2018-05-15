@@ -25,7 +25,7 @@ func Test(t *testing.T) {
 	}
 
 	//Check body
-	expected := "Hello world";
+	expected := "Hello world, Dev Heroku!";
 	if recorder.Body.String() != expected {
 		t.Errorf("returned false body: got %v want %v", recorder.Body.String(), expected);
 	}
