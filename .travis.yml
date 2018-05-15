@@ -10,4 +10,6 @@ script:
 deploy:
   provider: heroku
   api_key: $HEROKU_APIKEY
-  app: ppl-leasing
+  app:
+    master: ppl-leasing-dev
+    production: ppl-leasing
