@@ -149,34 +149,6 @@ var leasing_type = graphql.NewObject(
 					return test,nil
 				},
 			},
-			"test2" : &graphql.Field{
-				Type: graphql.String,
-				Args: graphql.FieldConfigArgument{
-					"value": &graphql.ArgumentConfig{
-						Type: graphql.Int,
-					},
-					"rand": &graphql.ArgumentConfig{
-						Type: graphql.Int,
-					},
-				},
-				Resolve: func(p graphql.ResolveParams)(interface{}, error){
-					var test = ""
-					if(len(p.Args) == 0){
-						return "no patameter found", nil
-					}
-					if(p.Args["value"] == nil){
-						test += "value not found. "
-					}else{
-						test += "value was: " + strconv.Itoa(p.Args["value"].(int)) + ". "
-					}
-					if(p.Args["rand"] == nil){
-						test += "rand not found. "
-					}else{
-						test += "rand was: " + strconv.Itoa(p.Args["rand"].(int)) + ". "
-					}
-					return test,nil
-				},
-			},
 			"kunden" : &graphql.Field{
 				Type: kunde_type,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
