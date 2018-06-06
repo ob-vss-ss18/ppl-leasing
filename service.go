@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/graphql-go/graphql"
 	"strconv"
+	"os"
 )
 
 // The recommended way to use external packages is by downloading and installing them via "go get".
