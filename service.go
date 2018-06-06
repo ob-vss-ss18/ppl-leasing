@@ -257,8 +257,8 @@ func main() {
 		json.NewEncoder(w).Encode(result)
 	})
 
-	//err := http.ListenAndServe(":"+os.Getenv("PORT"), nil) // set listen port
-	err := http.ListenAndServe(":8080", nil) // set listen port
+	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil) // set listen port
+	//err := http.ListenAndServe(":8080", nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
