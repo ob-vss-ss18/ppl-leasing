@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"encoding/json"
+	//"encoding/json"
 	"github.com/graphql-go/graphql"
 	"os"
+	"github.com/graphql-go/handler"
 )
 
 // The recommended way to use external packages is by downloading and installing them via "go get".
@@ -17,76 +18,68 @@ import (
 
 
 type Kunde struct {
-	kunden_id int
-	name string
-	vorname string
+	Kunden_id int `json:"kunden_id"`
+	Name string `json:"name"`
+	Vorname string `json:"vorname"`
 }
 
-var kunden_slice []Kunde
-var kunde_type = graphql.NewObject(
-	graphql.ObjectConfig{
+var kunden_slice [] Kunde
+var KundeType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Kunde",
 		Fields: graphql.Fields{
 			"kunden_id": &graphql.Field{
-				Type: graphql.Int,
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Type: graphql.NewNonNull(graphql.ID),
+				/*Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if kunde, ok := p.Source.(*Kunde); ok == true {
 						return kunde.kunden_id, nil
 					}
 					return nil, nil
-				},
+				},*/
 			},
 			"name": &graphql.Field{
-				Type: graphql.String,
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Type: graphql.NewNonNull(graphql.String),
+				/*Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if kunde, ok := p.Source.(*Kunde); ok == true {
 						return kunde.name, nil
 					}
 					return nil, nil
-				},
+				},*/
 			},
 			"vorname": &graphql.Field{
-				Type: graphql.String,
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Type: graphql.NewNonNull(graphql.String),
+				/*Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if kunde, ok := p.Source.(*Kunde); ok == true {
 						return kunde.vorname, nil
 					}
 					return nil, nil
-				},
+				},*/
 			},
 		},
 	},
 )
 
-type leased_products struct {
-	product_ids []int
-	leasing_id int
-}
-
-var leased_products_type = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: "leasedProducts",
-		Fields: graphql.Fields{
-			"product_ids": &graphql.Field{
-				Type: graphql.NewList(graphql.Int),
-			},
-			"leasing_id": &graphql.Field{
-				Type: graphql.Int,
-			},
-		},
-	},
-)
 
 type leasing_contract struct{
-	kunde Kunde
-	products []leased_products
-	datum string
-	rabatt int
-	service_flat bool
-	peak_flat bool
-	testwert int
-	versicherung bool
+	Kunden_id int `json:"kunden_id"`
+	Products []int `json:"products"`
+	Leasing_id int  `json:"leasing_id"`
+	Datum string `json:"datum"`
+	Rabatt int `json:"rabatt"`
+	Service_flat bool `json:"service_flat"`
+	Testwert int `json:"testwert"`
+	Versicherung bool `json:"versicherung"`
 
+}
+
+var leasing_contract_example leasing_contract = leasing_contract{
+	1,
+	[]int{1,2,3},
+	0,
+	"03.10.1992",
+	4,
+	true,
+	10,
+	false,
 }
 
 var leasing_type = graphql.NewObject(
@@ -94,10 +87,10 @@ var leasing_type = graphql.NewObject(
 		Name: "leasingContract",
 		Fields: graphql.Fields{
 			"kunde": &graphql.Field{
-				Type: kunde_type,
+				Type: KundeType,
 			},
 			"products": &graphql.Field{
-				Type: graphql.NewList(leased_products_type),
+				Type: graphql.NewList(graphql.Int),
 			},
 			"datum": &graphql.Field{
 				Type: graphql.String,
@@ -106,9 +99,6 @@ var leasing_type = graphql.NewObject(
 				Type: graphql.Int,
 			},
 			"service_flat": &graphql.Field{
-				Type: graphql.Boolean,
-			},
-			"peak_flat": &graphql.Field{
 				Type: graphql.Boolean,
 			},
 			"testwert": &graphql.Field{
@@ -135,26 +125,32 @@ var leasing_type = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Query",
 		Fields: graphql.Fields{
-			"test" : &graphql.Field{
-				Type: graphql.String,
-				Args: graphql.FieldConfigArgument{
-					"value": &graphql.ArgumentConfig{
-						Type: graphql.String,
-					},
-				},
-				Resolve: func(p graphql.ResolveParams)(interface{}, error){
-					var test = ""
-					test = "test successfull - your input was: " + p.Args["value"].(string)
-					return test,nil
-				},
-			},
 			"kunden" : &graphql.Field{
-				Type: kunde_type,
+				Type: KundeType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					if(len(kunden_slice)>0) {
 						return &kunden_slice[0],nil
 					};
 					return nil,nil
+				},
+			},
+			"all_kunden" : &graphql.Field{
+				Type: KundeType,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return &Kunde{
+						7,
+						"nachname",
+						"vorname",
+					}, nil;
+				},
+			},
+			"liste" : &graphql.Field{
+				Type: graphql.NewList(graphql.Int),
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					primes := []int{}
+					primes = append(primes, 1)
+					primes = append(primes, 234)
+					return primes,nil
 				},
 			},
 		},
@@ -164,7 +160,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Mutation",
 	Fields: graphql.Fields{
 		"createKunde": &graphql.Field{
-			Type: kunde_type,
+			Type: KundeType,
 			Args: graphql.FieldConfigArgument{
 				"vorname": &graphql.ArgumentConfig{
 					Description: "user forename",
@@ -178,24 +174,20 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(p graphql.ResolveParams)(interface{}, error){
 				nname := p.Args["name"].(string)
 				vname := p.Args["vorname"].(string)
-				user := &Kunde{
-					vorname:vname,
-					name:nname,
-					kunden_id:len(kunden_slice),
+				user := Kunde{
+					Kunden_id:len(kunden_slice),
+					Name:nname,
+					Vorname:vname,
 				}
-				kunden_slice = append(kunden_slice,*user)
-				return user,nil
+				kunden_slice = append(kunden_slice,user)
+				return &user,nil
 			},
 		},
 	},
 })
 
 
-var schema, _ = graphql.NewSchema(
-	graphql.SchemaConfig{
-		Query: rootQuery,
-		Mutation: rootMutation,
-	})
+
 
 func executeQuery(query string, schema graphql.Schema) *graphql.Result {
 	result := graphql.Do(graphql.Params{
@@ -208,9 +200,8 @@ func executeQuery(query string, schema graphql.Schema) *graphql.Result {
 	return result
 }
 
-//http://localhost:8080/graphql?query={user(id:%221%22){name}}
-
-
+//http://localhost:8080/graphql?query={user(id:"1"){name}}
+//http://localhost:8080/graphql?query=mutation{createKunde(name: "hans", vorname: "dieter" ){kunden_id}}
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello world, Dev Heroku!") // send data to client side
 }
@@ -220,17 +211,39 @@ func main() {
 
 	//_ = importJSONDataFromFile("data.json", &data)
 
-	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
+	var schema, _ = graphql.NewSchema(
+		graphql.SchemaConfig{
+		Query: rootQuery,
+		Mutation: rootMutation,
+	})
+
+
+
+	handler := handler.New(&handler.Config{
+		Schema:   &schema,
+		GraphiQL: true,
+	})
+
+
+	/*http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
 		//check here for mutations
 		var query = r.URL.Query().Get("query")
 		var result *graphql.Result
 		result = executeQuery(query, schema)
 		fmt.Print("result received")
 		json.NewEncoder(w).Encode(result)
-	})
+	})*/
 
-	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil) // set listen port
-	//err := http.ListenAndServe(":8080", nil) // set listen port
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	http.Handle("/graphql" , handler)
+
+
+
+	err := http.ListenAndServe(":"+port, nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
