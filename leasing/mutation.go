@@ -3,7 +3,7 @@ package leasing
 import (
 	"github.com/graphql-go/graphql"
 	"strconv"
-	"strings"
+	"time"
 )
 
 var rootMutation = graphql.NewObject(graphql.ObjectConfig{
@@ -22,23 +22,23 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 				"datum": &graphql.ArgumentConfig{
 					Description: "Datum",
-					Type: 		 graphql.NewList(graphql.String),
+					Type: 		 graphql.NewNonNull(graphql.DateTime),
 				},
 				"rabatt": &graphql.ArgumentConfig{
 					Description: "Rabatt",
-					Type: 		 graphql.NewList(graphql.Int),
+					Type: 		 graphql.NewNonNull(graphql.Int),
 				},
 				"service_flat": &graphql.ArgumentConfig{
 					Description: "Bool for the service flat",
-					Type: 		 graphql.NewList(graphql.Boolean),
+					Type: 		 graphql.NewNonNull(graphql.Boolean),
 				},
 				"testwert": &graphql.ArgumentConfig{
 					Description: "Testwert",
-					Type: 		 graphql.NewList(graphql.Boolean),
+					Type: 		 graphql.NewNonNull(graphql.Boolean),
 				},
 				"versicherung": &graphql.ArgumentConfig{
 					Description: "Bool for the insurance",
-					Type: 		 graphql.NewList(graphql.Boolean),
+					Type: 		 graphql.NewNonNull(graphql.Boolean),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams)(interface{}, error){
@@ -47,35 +47,21 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				if err != nil {
 					return nil, err
 				}
-				prods := p.Args["products"].(string)
-				//String in Liste umformen
-				products := []int{};
-				values := strings.Split(prods, ",")
-				for product := range values {
-					products = append(products, product)
+				prods, _ := p.Args["products"].([]interface{})
+				products := []int{}
+				for _, product := range prods {
+					products = append(products, product.(int))
 				}
-
-				datum := p.Args["datum"].(string)
-				r := p.Args["rabatt"].(string)
-				rabatt, errR := strconv.Atoi(r)
-				if errR != nil {
-					return nil, errR
+				datumString := p.Args["datum"].(string)
+				layout := "2006-01-02T15:04:05.000Z"
+				datum, err := time.Parse(layout, datumString)
+				if err != nil {
+					return nil, err
 				}
-				s := p.Args["service_flat"].(string)
-				service_flat, errS := strconv.ParseBool(s)
-				if errS != nil {
-					return nil, errS
-				}
-				t := p.Args["testwert"].(string)
-				testwert, errT := strconv.ParseBool(t)
-				if errT != nil {
-					return nil, errT
-				}
-				v := p.Args["versicherung"].(string)
-				versicherung, errV := strconv.ParseBool(v)
-				if errV != nil {
-					return nil, errV
-				}
+				rabatt := p.Args["rabatt"].(int)
+				service_flat := p.Args["service_flat"].(bool)
+				testwert := p.Args["testwert"].(bool)
+				versicherung := p.Args["versicherung"].(bool)
 				leasing_contract := Leasing_contract{
 					Kunden_id: kunden_id,
 					Products: products,

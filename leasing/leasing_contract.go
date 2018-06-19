@@ -1,10 +1,14 @@
 package leasing
 
+import (
+	"time"
+)
+
 type Leasing_contract struct{
 	Leasing_id int  `json:"leasing_id"`
 	Kunden_id int `json:"kunden_id"`
 	Products []int `json:"products"`
-	Datum string `json:"datum"`
+	Datum time.Time `json:"datum"`
 	Rabatt int `json:"rabatt"`
 	Service_flat bool `json:"service_flat"`
 	Testwert bool `json:"testwert"`
@@ -17,7 +21,7 @@ func CreateLeasingContract(contract *Leasing_contract) (*Leasing_contract, error
 	sqlStatement := `
 			INSERT INTO Leasing (Datum, Kunden_ID, Testwert, Versicherung, Serviceflat, Rabatt) 
 			VALUES ($1, $2, $3, $4, $5, $6)
-			RETURNING id`
+			RETURNING Leasing_ID`
 	err := db.QueryRow(sqlStatement, contract.Datum, contract.Kunden_id, contract.Testwert,
 		contract.Versicherung, contract.Service_flat, contract.Rabatt).Scan(&id)
 	if err != nil {
@@ -33,18 +37,20 @@ func CreateLeasingContract(contract *Leasing_contract) (*Leasing_contract, error
 			return nil, error
 		}
 	}
+	//Daten an Billing und Mailing weiterleiten
 	return contract, nil
 }
 
 func GetLeasingContractByID(id int)(*Leasing_contract, error) {
 	var kunden_id int
-	var datum string
+	var datum time.Time
 	var rabatt int
 	var service_flat bool
 	var testwert bool
 	var versicherung bool
+	var leasing_id int
 	err := db.QueryRow("SELECT * FROM Leasing WHERE Leasing_ID=$1", id).
-		Scan(&kunden_id, &datum, &rabatt, &service_flat, &testwert, &versicherung)
+		Scan(&leasing_id, &kunden_id, &datum, &rabatt, &service_flat, &testwert, &versicherung)
 	if err != nil {
 		return nil, err
 	}

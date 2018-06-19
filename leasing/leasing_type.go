@@ -15,19 +15,19 @@ var LeasingType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.NewList(graphql.Int),
 		},
 		"datum": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.DateTime),
 		},
 		"rabatt": &graphql.Field{
-			Type: graphql.Int,
+			Type: graphql.NewNonNull(graphql.Int),
 		},
 		"service_flat": &graphql.Field{
-			Type: graphql.Boolean,
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 		"testwert": &graphql.Field{
-			Type: graphql.Boolean,
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 		"versicherung": &graphql.Field{
-			Type: graphql.Boolean,
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 	},
 },
