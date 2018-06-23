@@ -29,7 +29,7 @@ func CreateLeasingContract(contract *Leasing_contract) (*Leasing_contract, error
 	}
 	contract.Leasing_id = id
 	//Products speichern
-	for product := range contract.Products {
+	for _, product := range contract.Products {
 		_, error := db.Exec(`
 				INSERT INTO Leased_Products (Leasing_ID, Product_ID)
 				VALUES ($1, $2)`, id, product)
@@ -50,7 +50,7 @@ func GetLeasingContractByID(id int)(*Leasing_contract, error) {
 	var versicherung bool
 	var leasing_id int
 	err := db.QueryRow("SELECT * FROM Leasing WHERE Leasing_ID=$1", id).
-		Scan(&leasing_id, &kunden_id, &datum, &rabatt, &service_flat, &testwert, &versicherung)
+		Scan(&leasing_id, &datum, &kunden_id, &testwert, &versicherung, &service_flat, &rabatt)
 	if err != nil {
 		return nil, err
 	}
