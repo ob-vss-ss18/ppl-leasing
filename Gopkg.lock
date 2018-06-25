@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  name = "github.com/golang-migrate/migrate"
+  packages = [
+    ".",
+    "database",
+    "database/postgres",
+    "source",
+    "source/file"
+  ]
+  revision = "22f249514de9aa3f8a720a7cabbdd45d294f83a1"
+  version = "v3.2.0"
+
+[[projects]]
   name = "github.com/graphql-go/graphql"
   packages = [
     ".",
@@ -24,6 +36,15 @@
   packages = ["."]
   revision = "f0393b2c10daeebea900292b8e092e73475399d9"
   version = "v0.2.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid"
+  ]
+  revision = "0677bdde3e15a69060c33fac24fd53044b4694b8"
 
 [solve-meta]
   analyzer-name = "dep"
